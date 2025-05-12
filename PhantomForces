@@ -1,0 +1,121 @@
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local HttpService = game:GetService("HttpService")
+
+local Theme = {
+    Background = Color3.fromRGB(230, 240, 255),
+    Accent = Color3.fromRGB(160, 170, 200),
+    TextColor = Color3.fromRGB(20, 30, 60)
+}
+
+-- Create the UI
+local ScreenGui = Instance.new("ScreenGui", CoreGui)
+ScreenGui.Name = "KeyUI"
+ScreenGui.ResetOnSpawn = false
+
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 300, 0, 180)
+Frame.Position = UDim2.new(0.5, -150, 0.5, -90)
+Frame.BackgroundColor3 = Theme.Background
+Frame.BorderSizePixel = 0
+Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+Frame.Active = true
+Frame.Draggable = true
+
+Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 12)
+
+local Title = Instance.new("TextLabel", Frame)
+Title.Text = "Enter Frostbyte Key"
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Position = UDim2.new(0, 0, 0, 10)
+Title.BackgroundTransparency = 1
+Title.TextColor3 = Theme.TextColor
+Title.Font = Enum.Font.SourceSansBold
+Title.TextSize = 18
+
+-- Key input TextBox
+local TextBox = Instance.new("TextBox", Frame)
+TextBox.PlaceholderText = "Key Here"
+TextBox.Size = UDim2.new(0.8, 0, 0, 35)
+TextBox.Position = UDim2.new(0.1, 0, 0.35, 0)
+TextBox.BackgroundColor3 = Theme.Accent
+TextBox.TextColor3 = Theme.TextColor
+TextBox.Font = Enum.Font.SourceSansBold
+TextBox.TextSize = 16
+TextBox.ClearTextOnFocus = true
+TextBox.PlaceholderColor3 = Color3.fromRGB(0, 0, 0)  -- Black placeholder text color
+Instance.new("UICorner", TextBox).CornerRadius = UDim.new(0, 8)
+
+-- Submit button
+local Submit = Instance.new("TextButton", Frame)
+Submit.Text = "Submit"
+Submit.Size = UDim2.new(0.5, 0, 0, 30)
+Submit.Position = UDim2.new(0.25, 0, 0.63, 0)
+Submit.BackgroundColor3 = Theme.Accent
+Submit.TextColor3 = Theme.TextColor
+Submit.Font = Enum.Font.SourceSansBold
+Submit.TextSize = 16
+Instance.new("UICorner", Submit).CornerRadius = UDim.new(0, 8)
+
+-- Get Key button (for Discord invite)
+local GetKey = Instance.new("TextButton", Frame)
+GetKey.Text = "Get Key"
+GetKey.Size = UDim2.new(0, 90, 0, 25)
+GetKey.Position = UDim2.new(0, 10, 1, -35)
+GetKey.BackgroundColor3 = Theme.Accent
+GetKey.TextColor3 = Theme.TextColor
+GetKey.Font = Enum.Font.SourceSansBold
+GetKey.TextSize = 14
+Instance.new("UICorner", GetKey).CornerRadius = UDim.new(0, 6)
+
+-- Discord button functionality
+GetKey.MouseButton1Click:Connect(function()
+    if syn and syn.request then
+        syn.request({
+            Url = "http://127.0.0.1:6463/rpc?v=1",
+            Method = "POST",
+            Headers = {["Content-Type"] = "application/json", ["Origin"] = "https://dsc.gg"},
+            Body = HttpService:JSONEncode({
+                cmd = "INVITE_BROWSER",
+                args = {code = "getfrostbyte"},
+                nonce = HttpService:GenerateGUID(false)
+            }),
+        })
+    else
+        setclipboard("https://dsc.gg/getfrostbyte")
+    end
+end)
+
+local correctKey = "FrostbytePhantom"
+
+Submit.MouseButton1Click:Connect(function()
+    if TextBox.Text == correctKey then
+        -- When the key is correct, destroy the UI
+        ScreenGui:Destroy()  -- This will remove the entire UI
+
+        -- Load your main script here after key is correct
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/FrostByteV1/Sources/refs/heads/main/PhantomForces"))()
+    else
+        -- Display error message if the key is incorrect
+        TextBox.Text = ""
+        TextBox.PlaceholderText = "Incorrect! Try again..."
+        TextBox.PlaceholderColor3 = Color3.fromRGB(255, 0, 0)  -- Red color for incorrect input
+    end
+end)
+
+-- Ensure TextBox behaves as expected with placeholder text
+TextBox.Focused:Connect(function()
+    if TextBox.Text == "Key Here" then
+        TextBox.Text = ""  -- Clear the placeholder text when clicked
+        TextBox.PlaceholderText = ""
+    end
+end)
+
+TextBox.FocusLost:Connect(function()
+    if TextBox.Text == "" then
+        TextBox.PlaceholderText = "Key Here"  -- Restore the placeholder text if the field is empty
+        TextBox.PlaceholderColor3 = Color3.fromRGB(0, 0, 0)  -- Black color for placeholder text
+    end
+end)
+
+-- End of script
