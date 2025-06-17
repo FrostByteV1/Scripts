@@ -1,4 +1,4 @@
--- This script was generated using the MoonVeil Obfuscator v1.2.2 [https://moonveil.cc]
+-- This was obsfucated @ discord.gg/getfrostbyte
 
 local o,pd,Jh,Nk=type,table.unpack,pairs,getmetatable;
 local Sb,bk,Bb,sh,Gc,Lf,ih,Kg,xl,md,fk
